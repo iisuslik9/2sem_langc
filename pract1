@@ -1,3 +1,4 @@
+//задание к практическому занятию
 #include <iostream>
 #include <string>
 #include <fstream>
