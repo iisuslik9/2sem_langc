@@ -1,0 +1,124 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+
+using namespace std;
+
+struct students
+{
+	string last_name;
+	string first_name;
+	short marks[3];
+};
+
+bool ReadFile(const string file_name, students*& array, int& n);
+
+void print(const  students* const array, int n);
+
+void BestStudent(const students* const array, int);
+
+int main(int argc, char* argv[])
+{
+	setlocale(LC_ALL, "rus");
+
+	if (argc != 2)
+	{
+		cout << "отсутсвует аргумент - имя файла" << endl;
+		return 0;
+	}
+
+	string file_name = string(argv[1]);
+	students* array;
+	int count;
+
+	if (!ReadFile(file_name, array, count)) return 1; 
+
+	print(array, count);
+	BestStudent(array, count);
+
+	system("pause");
+	return 0;
+}
+
+void BestStudent(const students* const array, int n) {
+	int sum_marks_max = 0;
+	for (int i = 0; i < n; i++)
+	{
+		int sum_marks = 0;
+		for (int j = 0; j < 3; j++) {
+			sum_marks += array[i].marks[j];
+		}
+		if (sum_marks > sum_marks_max) 
+		{
+			sum_marks_max = sum_marks;
+		}
+	}
+	cout << "лучший студент(ы) ";
+	for (int i = 0; i < n; i++) {
+		int sum_marks = 0;
+		for (int j = 0; j < 3; ++j) {
+			sum_marks += array[i].marks[j];
+		}
+		if (sum_marks == sum_marks_max) {
+			cout << array[i].first_name << " " << array[i].last_name << " с суммой оценок: " << sum_marks_max << endl;
+		}
+	}
+}
+
+bool ReadFile(const string file_name, students*& array, int& n)
+{
+	ifstream in;
+	in.open(file_name);
+	if (!in.is_open())
+	{
+		cout << "Не удалось открыть файл " + file_name; 
+		return 0;
+	}
+
+	stringstream obj; 
+
+	string str; int count = 0;
+
+	while (getline(in, str))
+	{
+		obj << str + "\n";
+		count++;
+	}
+	in.close();
+
+	n = count;
+	array = new students[n];
+	for (int i = 0; i < n; i++)
+	{
+		string str;
+		getline(obj, str);
+		int index = str.find(' ');
+		array[i].first_name = str.substr(0, index);
+		str = str.substr(index + 1);
+		index = str.find(' ');
+		array[i].last_name = str.substr(0, index);
+		str = str.substr(index + 1);
+		for (int j = 0; j < 3; j++)
+		{
+			index = str.find(' ');
+			array[i].marks[j] = stoi(str.substr(0, index));
+			str = str.substr(index + 1);
+		}
+
+	}
+	return 1;
+
+}
+
+void print(const  students* const array, int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+		cout << array[i].first_name << " " << array[i].last_name;
+		for (int j = 0; j < 3; j++)
+			cout << " " << array[i].marks[j];
+		cout << endl;
+	}
+
+}
