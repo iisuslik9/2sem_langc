@@ -1,0 +1,134 @@
+//Вариант 4
+//Составить программу, которая содержит текущую информацию о заявках на
+//авиабилеты.
+//Каждая заявка содержат :
+//• пункт назначения;
+//• номер рейса;
+//• фамилию и инициалы пассажира;
+//• желаемую дату вылета.
+//Программа должна обеспечивать :
+//• хранение всех заявок в виде двоичного дерева;
+//• добавление и удаление заявок;
+//• по заданному номеру рейса и дате вылета вывод заявок с их последующим
+//удалением;
+//• вывод всех заявок
+
+#include <iostream>
+using namespace std;
+
+struct TicketRequest {
+    string destination;
+    string flight_num;
+    string pass_name;
+    string date;
+    
+    TicketRequest(const string& dest, const string& num, const string& name, const string& date) : destination(dest), flight_num(num), pass_name(name), date(date) {}
+};
+ 
+struct NodeT {
+    TicketRequest data;
+    NodeT* left;
+    NodeT* right;
+    NodeT(const TicketRequest& data) : data( data), left(nullptr), right(nullptr) {}
+};
+
+struct BinaryTree {
+    NodeT* root;
+
+    BinaryTree() : root(nullptr) {}
+
+    BinaryTree(const TicketRequest& ticket)
+    {
+        NodeT* node = new NodeT(ticket);
+        root = node;
+    }
+    // Рекурсивный метод для очистки памяти (удаление дерева)
+    ~BinaryTree()
+    {
+        Destroy(root);
+    }
+
+    void Destroy(NodeT* node)
+    {
+        if (node != nullptr)
+        {
+            Destroy(node->left);
+            Destroy(node->right);
+            delete node;
+        }
+    }
+    NodeT* insert(NodeT* node, const TicketRequest& ticket) {
+        if (node == nullptr) {
+            return new NodeT(ticket);
+        }
+        else if (compareTickets(ticket, node->data)) {
+            node->left = insert(node->left, ticket);
+        }
+        else if (compareTickets(node->data, ticket)) {
+            node->right = insert(node->right, ticket);
+        }
+        else {
+            // Если билет с таким же номером рейса, датой и именем уже существует
+            std::cout << "Ticket already exists: " << ticket.flight_num
+                << " on " << ticket.date
+                << " for " << ticket.pass_name << "\n";
+        }
+        return node;
+    }
+
+    void insert(const TicketRequest& ticket) {
+        root = insert(root, ticket);
+    }
+
+    // Сравнение по составному ключу (номер рейса + дата + имя пассажира)
+    bool compareTickets(const TicketRequest& t1, const TicketRequest& t2) {
+        if (t1.flight_num == t2.flight_num) {
+            if (t1.date == t2.date) {
+                return t1.pass_name < t2.pass_name; 
+            }
+            return t1.date < t2.date; 
+        }
+        return t1.flight_num < t2.flight_num;
+    }
+
+    void inOrderTraversal(NodeT* node) {
+        if (node) {
+            inOrderTraversal(node->left);
+            std::cout << "Destination: " << node->data.destination
+                << ", Flight Number: " << node->data.flight_num
+                << ", Passenger: " << node->data.pass_name
+                << ", Departure Date: " << node->data.date << "\n";
+            inOrderTraversal(node->right);
+        }
+    }
+    void displayTickets() {
+        if (root == nullptr) {
+            std::cout << "Дерево пустое." << std::endl;
+        }
+        else {
+            inOrderTraversal(root);  // Выводим дерево в порядке возрастания
+            std::cout << std::endl;
+        }
+        
+    }
+};
+
+
+
+
+int main()
+{
+    BinaryTree tree;
+
+    tree.insert(TicketRequest("New York", "AA103", "Ivanov I.I.", "2024-10-15"));
+    tree.insert(TicketRequest("Los Angeles", "AA101", "Petrov P.P.", "2024-10-16"));
+    tree.insert(TicketRequest("Chicago", "AA106", "Sidorov S.S.", "2024-10-15")); // Дубликат
+    tree.insert(TicketRequest("New York", "AA104", "Ivanov I.I.", "2024-10-15")); // Дубликат
+    tree.insert(TicketRequest("New York", "AA108", "Ivanov I.I.", "2024-10-15"));
+    tree.insert(TicketRequest("New York", "AA103", "Ivanov I.I.", "2025-10-15"));
+    tree.insert(TicketRequest("New York", "AA103", "Ivanov I.I.", "2023-10-15"));
+
+    std::cout << "All tickets:\n";
+    tree.displayTickets();
+    return 0;
+}
