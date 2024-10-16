@@ -37,9 +37,7 @@ struct NodeT {
 
 struct BinaryTree {
     NodeT* root;
-
     BinaryTree() : root(nullptr) {}
-
     BinaryTree(const TicketRequest& ticket)
     {
         NodeT* node = new NodeT(ticket);
@@ -49,12 +47,9 @@ struct BinaryTree {
     {
         if (root != nullptr) {
             Destroy(root);
-
             cout << "дерево удалено\n";
         }
-        else {
-            cout << "дерево пустое(деструктор)\n";
-        }
+        else cout << "дерево пустое(деструктор)\n";
     }
 
     void Destroy(NodeT* node)
@@ -94,6 +89,7 @@ struct BinaryTree {
         }
         return t1.flight_num < t2.flight_num;
     }
+
     bool compareTicketsWithoutPassenger(const TicketRequest& a, const TicketRequest& b) {
         if (a.flight_num == b.flight_num) {
             return a.date < b.date;
@@ -126,8 +122,7 @@ struct BinaryTree {
             return 1;
         }
         ofstream out(outputfile); //откроет файл для перезаписи, создаст файл  если его нет
-        if (!out.is_open())
-        {
+        if (!out.is_open()){
             cout << "Не удалось открыть файл " + outputfile + "\n";
             return 1;
         }
@@ -277,11 +272,8 @@ struct BinaryTree {
             insert(TicketRequest(destination, flightNumber, passengerName, date));
 
         }
-
-        return 0;
-        
+        return 0;       
     }
-
 };
 
 
@@ -292,7 +284,7 @@ int main()
 
     if (tree.readFromFile("1.txt")) return 0;
 
-    /*tree.insert(TicketRequest("Москва", "AA103", "Иванов И.И.", "2024-10-15"));
+   /* tree.insert(TicketRequest("Москва", "AA103", "Иванов И.И.", "2024-10-15"));
     tree.insert(TicketRequest("Новосибирск", "AA101", "Петров П.П.", "2024-10-16"));
     tree.insert(TicketRequest("Омск", "AA103", "Сидоров С.С.", "2024-10-15")); 
     tree.insert(TicketRequest("Москва", "AA104", "Иванов И.И.", "2024-10-15")); 
@@ -301,12 +293,14 @@ int main()
     tree.insert(TicketRequest("Москва", "AA100", "Демидов Д.Д.", "2024-10-15"));
     tree.insert(TicketRequest("Москва", "AA103", "Иванов И.И.", "2023-10-15"));*/
 
-    cout << "все заявки в порядке аозрастания:\n";
+    cout << "все заявки в порядке возрастания:\n";
     tree.displayTickets();
 
     //tree.removeTicket("AA103", "2024-10-15", "bhbhh И.И.");
-    //tree.removeTicket("AA103", "2024-10-15", "Иванов И.И.");
+    tree.removeTicket("AA104", "2024-10-15", "Иванов И.И.");
+    tree.displayTickets();
     tree.removeTicket("AA103", "2024-10-15");
+
     int flag = tree.SaveOptiones();
     if (flag != 0) {
         cout << "не удалось распечатать дерево" << endl;
